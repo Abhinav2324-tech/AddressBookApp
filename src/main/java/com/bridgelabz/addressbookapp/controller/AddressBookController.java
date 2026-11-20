@@ -1,53 +1,53 @@
 package com.bridgelabz.addressbookapp.controller;
 
-import java.util.LinkedHashMap;
+import com.bridgelabz.addressbookapp.dto.AddressBookDTO;
+import com.bridgelabz.addressbookapp.dto.ResponseDTO;
+import com.bridgelabz.addressbookapp.model.AddressBookData;
 import java.util.List;
-import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Demonstrates the five Address Book REST routes without storing contacts.
+ * Returns structured JSON responses using the contact model and DTOs.
  */
 @RestController
 @RequestMapping("/addressbook")
 public class AddressBookController {
 
     @GetMapping({"", "/"})
-    public ResponseEntity<Map<String, Object>> getAllContacts() {
-        return response("Get contacts successful", List.of());
+    public ResponseEntity<ResponseDTO> getAllContacts() {
+        AddressBookData sample = new AddressBookData(1, "Lisa", "9876543210", "Chennai");
+        return response("Get contacts successful", List.of(sample));
     }
 
     @GetMapping("/get/{contactId}")
-    public ResponseEntity<Map<String, Object>> getContactById(
+    public ResponseEntity<ResponseDTO> getContactById(
             @PathVariable("contactId") int contactId) {
-        return response("Get contact by ID successful",
-                Map.of("contactId", contactId));
+        AddressBookData sample = new AddressBookData(contactId, "Lisa", "9876543210", "Chennai");
+        return response("Get contact by ID successful", sample);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Map<String, Object>> createContact(
-            @RequestBody Map<String, String> contact) {
+    public ResponseEntity<ResponseDTO> createContact(@RequestBody AddressBookDTO request) {
+        AddressBookData contact = new AddressBookData(1, request);
         return response("Create request received", contact);
     }
 
     @PutMapping("/update/{contactId}")
-    public ResponseEntity<Map<String, Object>> updateContact(
+    public ResponseEntity<ResponseDTO> updateContact(
             @PathVariable("contactId") int contactId,
-            @RequestBody Map<String, String> contact) {
-        Map<String, Object> data = new LinkedHashMap<>(contact);
-        data.put("contactId", contactId);
-        return response("Update request received", data);
+            @RequestBody AddressBookDTO request) {
+        AddressBookData contact = new AddressBookData(contactId, request);
+        return response("Update request received", contact);
     }
 
     @DeleteMapping("/delete/{contactId}")
-    public ResponseEntity<Map<String, Object>> deleteContact(
+    public ResponseEntity<ResponseDTO> deleteContact(
             @PathVariable("contactId") int contactId) {
-        return response("Delete request received",
-                Map.of("contactId", contactId));
+        return response("Delete request received", contactId);
     }
 
-    private ResponseEntity<Map<String, Object>> response(String message, Object data) {
-        return ResponseEntity.ok(Map.of("message", message, "data", data));
+    private ResponseEntity<ResponseDTO> response(String message, Object data) {
+        return ResponseEntity.ok(new ResponseDTO(message, data));
     }
 }
